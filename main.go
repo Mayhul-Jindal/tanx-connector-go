@@ -1,35 +1,15 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/tanx-libs/tanx-connector-go/client"
 )
 
 func main() {
-	c, err := client.New(client.MAINET)
-	if err != nil {
-		panic(err)
-	}
-
-	// first login
-	ethAddr := "0xF58001619C165cDd20B5F7A0EDa072Fd13943002"
-	ethPrivateKey := ""
-	_, _, err = c.Login(context.TODO(), ethAddr, ethPrivateKey)
-	if err != nil {
-		panic(err)
-	}
-
-	// fmt.Println(nonce, jwt)
+	// # pvt key, hash
 
 
-	// add correct valueshere to test the order
-	starkPrivateKey := ""
-	order, err := c.OrderCreate(context.TODO(), starkPrivateKey, "ethusdt", "limit", 100, "buy", 100)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(order)
+	// dont add 0x
+	fmt.Println(client.Sign("504e27c7c7c3aba8104ae3c50831406a458c08f6c9299d0fafb05a60ab8d51", "27dd634b2534f618d1b0d2bdd67f4ce05202447f6a79a8e778b3863bd01e68c"))
 }

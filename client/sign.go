@@ -22,10 +22,12 @@ func SerializeSignature(r, s *big.Int) string {
 }
 
 
-func Sign(starkPrivateKey string, hash string) (string, error) {
-	r, s1 := doSign(starkPrivateKey, hash)
-	log.Println("r: ", r)
-	log.Println("s1: ", s1)
+func Sign(starkPrivateKey string, hashStr string) (string, error) {
+	r, s1 := doSign(starkPrivateKey, hashStr)
+	log.Println("\nr: ", r.Text(16))
+	log.Println("\ns1: ", s1.Text(16))
+
+	// no need to serialize directly use this r and s
 	return SerializeSignature(r, s1), nil
 }
 
@@ -62,7 +64,12 @@ var N_ELEMENT_BITS_ECDSA = big.NewInt(251)
 
 func doSign(starkPrivateKey string, hash string) (*big.Int, *big.Int) {
 	priKey, _ := new(big.Int).SetString(starkPrivateKey, 16)
-	msgHash, _ := new(big.Int).SetString(hash, 10)
+
+
+	// convert from hex instead of decimal
+	msgHash, _ := new(big.Int).SetString(hash, 16)
+
+
 	seed := 0
 	EcGen := pedersenCfg.ConstantPoints[1]
 	alpha := pedersenCfg.ALPHA
