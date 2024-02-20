@@ -8,65 +8,28 @@ import (
 )
 
 func main() {
-	c, err := client.New(client.TESTNET)
+	c, err := client.New(client.MAINET)
 	if err != nil {
 		panic(err)
 	}
 
-
-	e := "0xF58001619C165cDd20B5F7A0EDa072Fd13943002"
-	p := ""
-	_, _, err = c.Login(context.TODO(), e, p)
+	// first login
+	ethAddr := "0xF58001619C165cDd20B5F7A0EDa072Fd13943002"
+	ethPrivateKey := ""
+	_, _, err = c.Login(context.TODO(), ethAddr, ethPrivateKey)
 	if err != nil {
 		panic(err)
 	}
 
-	pnl, err := c.PNL(context.TODO())
+	// fmt.Println(nonce, jwt)
+
+
+	// add correct valueshere to test the order
+	starkPrivateKey := ""
+	order, err := c.OrderCreate(context.TODO(), starkPrivateKey, "ethusdt", "limit", 100, "buy", 100)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(pnl)
+	fmt.Println(order)
 }
-
-// func main() {
-// 	var stopCh chan struct{}
-// 	var subUnsubCh chan wsclient.SubUnsubRequest
-
-// 	ws := wsclient.New()
-
-// 	wsSubUnsubEventHandler := func(event *wsclient.SubUnsubEvent) {
-// 		log.Printf("SubUnsub event: %+v\n", event)
-// 	}
-
-// 	wsTradeEventHandler := func(event *wsclient.TradeEvent) {
-// 		log.Printf("Trade event: %+v\n", event)
-
-// 		// example
-// 		subUnsubCh <- wsclient.SubUnsubTradeTopics(wsclient.SUBSCRIBE,[]string{"btcusdc", "ethusdc"})
-// 	}
-
-// 	wsErrHandler := func(err error) {
-// 		switch err {
-// 		case err.(*wsclient.ErrSubUnsub):
-// 			log.Println("SubUnsub error: ", err)
-// 			stopCh <- struct{}{}
-
-// 		default:
-// 			log.Println("Default: ", err)
-// 		}
-// 	}
-
-// 	doneCh, stopCh, subUnsubCh, err := ws.Trade([]string{"btcusdc", "ethusdc"}, wsTradeEventHandler, wsSubUnsubEventHandler, wsErrHandler)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	select {
-// 	case <-stopCh:
-// 		log.Println("stopped was called")
-
-// 	case <-doneCh:
-// 		log.Println("done was called")
-// 	}
-// }
