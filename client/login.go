@@ -75,7 +75,10 @@ func (c *Client) Nonce(ctx context.Context, ethAddress string) (NonceResponse, e
 
 	var nonceResponse NonceResponse
 	err = json.NewDecoder(resp.Body).Decode(&nonceResponse)
-	
+	if err != nil {
+		return NonceResponse{}, &ErrJSONDecoding{Err: err}
+	}
+
 	if nonceResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
@@ -91,9 +94,6 @@ func (c *Client) Nonce(ctx context.Context, ethAddress string) (NonceResponse, e
 		}
 
 		return NonceResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, nonceResponse.Message)
-
-	} else if err != nil {
-		return NonceResponse{}, &ErrJSONDecoding{Err: err}
 	}
 
 	return nonceResponse, nil
@@ -172,7 +172,10 @@ func (c *Client) Login(ctx context.Context, ethAddress string, privateKey string
 
 	var jwtResponse JWTResponse
 	err = json.NewDecoder(resp.Body).Decode(&jwtResponse)
-	
+	if err != nil {
+		return JWTResponse{}, &ErrJSONDecoding{Err: err}
+	}
+
 	if jwtResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
@@ -188,9 +191,6 @@ func (c *Client) Login(ctx context.Context, ethAddress string, privateKey string
 		}
 
 		return JWTResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, nonceResponse.Message)
-	
-	} else if err != nil {
-		return JWTResponse{}, &ErrJSONDecoding{Err: err}
 	}
 
 	c.jwtToken = jwtResponse.Token.Access
@@ -239,7 +239,10 @@ func (c *Client) RefreshTokens(ctx context.Context) (RefreshTokenResponse, error
 
 	var refreshResponse RefreshTokenResponse
 	err = json.NewDecoder(resp.Body).Decode(&refreshResponse)
-	
+	if err != nil {
+		return RefreshTokenResponse{}, &ErrJSONDecoding{Err: err}
+	}
+
 	if refreshResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
@@ -255,9 +258,6 @@ func (c *Client) RefreshTokens(ctx context.Context) (RefreshTokenResponse, error
 		}
 
 		return RefreshTokenResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, refreshResponse.Message)
-	
-	} else if err != nil {
-		return RefreshTokenResponse{}, &ErrJSONDecoding{Err: err}
 	}
 
 	c.jwtToken = refreshResponse.Payload.Access

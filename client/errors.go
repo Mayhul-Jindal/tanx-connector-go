@@ -8,10 +8,11 @@ var (
 	ErrNotLoggedIn           = fmt.Errorf("not logged in, please login first as this is a protected endpoint")
 	ErrCoinNotFound          = fmt.Errorf("coin not found")
 	ErrInvalidNetwork        = fmt.Errorf("invalid network")
+	ErrInsufficientBalance   = fmt.Errorf("insufficient balance")
+	ErrInsufficientAllowance = fmt.Errorf("insufficient allowance")
+	ErrAllowanceTooLow       = fmt.Errorf("allowance too low")
 	ErrAlreadyLoggedIn       = fmt.Errorf("already logged in")
 )
-
-
 
 // json decoding error
 type ErrJSONDecoding struct {
@@ -43,13 +44,7 @@ func (e *ErrServer) Error() string {
 }
 
 
-// ErrInsufficientAllowance error
-type ErrInsufficientAllowance struct {
-	Allowance float64
-	Amount float64
-	Err error
-}
 
-func (e *ErrInsufficientAllowance) Error() string {
-	return fmt.Sprintf("current allowance of %v which is less than deposit amount %v. call SetAllowance function to change the allowance amount", e.Allowance, e.Amount)
-}
+/*
+{"status":"error","message":"Buying ETH is disabled in Testnet temporarily","payload":""}
+*/

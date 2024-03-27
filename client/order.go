@@ -73,7 +73,7 @@ func (c *Client) OrderNonce(ctx context.Context, opt OrderNonceRequest) (OrderNo
 		return OrderNonceResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, orderNonceResponse.Message)
 
 	} else if err != nil {
-		return OrderNonceResponse{}, &ErrJSONDecoding{Err: err}
+		return OrderNonceResponse{}, fmt.Errorf("error: %s", orderNonceResponse.Message)
 	}
 
 	return orderNonceResponse, nil
@@ -183,7 +183,7 @@ func (c *Client) OrderCreate(ctx context.Context, starkPrivateKey string, opt Or
 		return OrderCreateResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, orderCreateResponse.Message)
 
 	} else if err != nil {
-		return OrderCreateResponse{}, &ErrJSONDecoding{Err: err}
+		return OrderCreateResponse{}, fmt.Errorf("error: %s", orderCreateResponse.Message)
 	}
 
 	return orderCreateResponse, nil
@@ -394,6 +394,9 @@ func (c *Client) OrderCancel(ctx context.Context, orderID int) (OrderCancelRespo
 
 	var orderCancelResponse OrderCancelResponse
 	err = json.NewDecoder(resp.Body).Decode(&orderCancelResponse)
+	if err != nil {
+		return OrderCancelResponse{}, &ErrJSONDecoding{Err: err}
+	}
 
 	if orderCancelResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
@@ -410,9 +413,6 @@ func (c *Client) OrderCancel(ctx context.Context, orderID int) (OrderCancelRespo
 		}
 
 		return OrderCancelResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, orderCancelResponse.Message)
-	
-	} else if err != nil {
-		return OrderCancelResponse{}, &ErrJSONDecoding{Err: err}
 	}
 
 	return orderCancelResponse, nil
@@ -533,7 +533,7 @@ func (c *Client) TradesList(ctx context.Context, opt TradesListOptions) (TradesL
 	defer resp.Body.Close()
 
 	var tradesListResponse TradesListResponse
-	err = json.NewDecoder(resp.Body).Decode(&tradesListResponse)
+	errDecode := json.NewDecoder(resp.Body).Decode(&tradesListResponse)
 	if tradesListResponse.Status == ERROR {
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
 			return TradesListResponse{}, &ErrClient{
@@ -549,7 +549,7 @@ func (c *Client) TradesList(ctx context.Context, opt TradesListOptions) (TradesL
 
 		return TradesListResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, tradesListResponse.Message)
 
-	} else if err != nil {
+	} else if errDecode != nil {
 		return TradesListResponse{}, &ErrJSONDecoding{Err: err}
 	}
 

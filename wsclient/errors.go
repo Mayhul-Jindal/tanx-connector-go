@@ -6,7 +6,6 @@ import (
 )
 
 var ErrSomething = errors.New("something went wrong")
-var ErrNotLoggedIn = errors.New("not logged in")
 
 // json unmarshaling error
 type ErrJSONUnmarshal struct {
@@ -39,11 +38,11 @@ func (e *ErrSubUnsub) Error() string {
 }
 
 // websocket write message error
-// type ErrWsWriteJSON struct {
-// 	Msg string
-// 	Err error
-// }
+type ErrWsWriteJSON struct {
+	Msg string
+	Err error
+}
 
-// func (e *ErrWsWriteJSON) Error() string {
-// 	return fmt.Sprintf("Debug: %s\nError: %s\n", e.Msg, e.Err)
-// }
+func (e *ErrWsWriteJSON) Error() string {
+	return fmt.Sprintf("Debug: %s\nError: %s\n", e.Msg, e.Err)
+}
