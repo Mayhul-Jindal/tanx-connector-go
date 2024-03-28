@@ -31,7 +31,7 @@ type TradesPayload struct {
 }
 
 type TradesResponse struct {
-	Status  Status          `json:"status"`
+	Status  string          `json:"status"`
 	Message string          `json:"message"`
 	Payload []TradesPayload `json:"payload"`
 }
@@ -76,23 +76,8 @@ func (c *Client) Trades(ctx context.Context, market string, options TradesOption
 
 	var tradesResponse TradesResponse
 	err = json.NewDecoder(resp.Body).Decode(&tradesResponse)
-	if tradesResponse.Status == ERROR {
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			return TradesResponse{}, &ErrClient{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(tradesResponse.Message),
-			}
-		} else if resp.StatusCode >= 500 {
-			return TradesResponse{}, &ErrServer{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(tradesResponse.Message),
-			}
-		}
-
-		return TradesResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, tradesResponse.Message)
-
-	} else if err != nil {
-		return TradesResponse{}, &ErrJSONDecoding{Err: err}
+	if err != nil {
+		return TradesResponse{}, err
 	}
 
 	return tradesResponse, nil

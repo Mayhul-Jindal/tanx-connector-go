@@ -3,9 +3,6 @@ package client
 import (
 	"net/http"
 	"net/url"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient/simulated"
 )
 
 type Status string
@@ -38,11 +35,11 @@ const (
 	BALANCE_ENDPOINT       = "/sapi/v1/user/balance/"
 	PNL_ENDPOINT           = "/sapi/v1/user/pnl/"
 
-	ORDER_BASE_ENDPOINT   = "/sapi/v1/orders/"
-	ORDER_NONCE_ENDPOINT  = "/sapi/v1/orders/nonce/"
-	ORDER_CREATE_ENDPOINT = "/sapi/v1/orders/create/"
-	ORDER_CANCEL_ENDPOINT = "/sapi/v1/orders/cancel/"
-	TRADES_LIST_ENDPOINT  = "/sapi/v1/trades/"
+	ORDER_BASE_ENDPOINT                = "/sapi/v1/orders/"
+	ORDER_NONCE_ENDPOINT               = "/sapi/v1/orders/nonce/"
+	ORDER_CREATE_ENDPOINT              = "/sapi/v1/orders/create/"
+	ORDER_CANCEL_ENDPOINT              = "/sapi/v1/orders/cancel/"
+	TRADES_LIST_ENDPOINT               = "/sapi/v1/trades/"	
 
 	COIN_ENDPOINT                      = "/main/stat/v2/coins/"
 	VAULTID_ENDPOINT                   = "/main/user/create_vault/"
@@ -104,17 +101,6 @@ const (
 )
 
 type Client struct {
-	network BaseURL
-	
-	ethClient              simulated.Client
-	coinStatus             CoinStatusResponse
-	starkexContract        StarkexContract
-	starkexContractAddress common.Address
-
-	polygonClient   simulated.Client
-	polygonConfig   NetworkConfigData
-	polygonContract PolygonContract
-
 	httpClient   *http.Client
 	jwtToken     string
 	refreshToken string
@@ -215,8 +201,6 @@ func New(base BaseURL) (*Client, error) {
 	listFastWithdrawal := baseurl.JoinPath(LIST_FAST_WITHDRAWALS_ENDPOINT)
 
 	return &Client{
-		network: base,
-
 		httpClient:   http.DefaultClient,
 		jwtToken:     "",
 		refreshToken: "",

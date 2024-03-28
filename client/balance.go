@@ -47,6 +47,9 @@ func (c *Client) Balance(ctx context.Context, currency Currency) (BalanceRespons
 
 	var balanceResponse BalanceResponse
 	err = json.NewDecoder(resp.Body).Decode(&balanceResponse)
+	if err != nil {
+		return BalanceResponse{}, err
+	}
 
 	if balanceResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
@@ -63,9 +66,6 @@ func (c *Client) Balance(ctx context.Context, currency Currency) (BalanceRespons
 		}
 
 		return BalanceResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, balanceResponse.Message)
-
-	} else if err != nil {
-		return BalanceResponse{}, &ErrJSONDecoding{Err: err}
 	}
 
 	return balanceResponse, nil

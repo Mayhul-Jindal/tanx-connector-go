@@ -79,6 +79,10 @@ func (c *Client) PNL(ctx context.Context) (PNLResponse, error) {
 
 	var pnlResponse PNLResponse
 	err = json.NewDecoder(resp.Body).Decode(&pnlResponse)
+	if err != nil {
+		return PNLResponse{}, err
+	}
+
 	
 	if pnlResponse.Status == ERROR {
 		// handling 4xx and 5xx errors
@@ -95,9 +99,6 @@ func (c *Client) PNL(ctx context.Context) (PNLResponse, error) {
 		}
 
 		return PNLResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, pnlResponse.Message)
-	
-	} else if err != nil {
-		return PNLResponse{}, &ErrJSONDecoding{Err: err}
 	}
 	
 

@@ -32,7 +32,7 @@ type CandleStickOptions struct {
 }
 
 type CandleStickResponse struct {
-	Status  Status      `json:"status"`
+	Status  string      `json:"status"`
 	Message string      `json:"message"`
 	Payload [][]float64 `json:"payload"`
 }
@@ -81,24 +81,8 @@ func (c *Client) CandleStick(ctx context.Context, market string, options CandleS
 
 	var candleStickResponse CandleStickResponse
 	err = json.NewDecoder(resp.Body).Decode(&candleStickResponse)
-	
-	if candleStickResponse.Status == ERROR {
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			return CandleStickResponse{}, &ErrClient{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(candleStickResponse.Message),
-			}
-		} else if resp.StatusCode >= 500 {
-			return CandleStickResponse{}, &ErrServer{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(candleStickResponse.Message),
-			}
-		}
-
-		return CandleStickResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, candleStickResponse.Message)
-
-	} else if err != nil {
-		return CandleStickResponse{}, &ErrJSONDecoding{Err: err}
+	if err != nil {
+		return CandleStickResponse{}, err
 	}
 
 	return candleStickResponse, nil

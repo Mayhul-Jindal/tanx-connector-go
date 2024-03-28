@@ -3,12 +3,11 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 type HealthResponse struct {
-	Status  Status `json:"status"`
+	Status  string `json:"status"`
 	Message string `json:"message"`
 	Payload string `json:"payload"`
 }
@@ -31,23 +30,8 @@ func (c *Client) Health(ctx context.Context) (HealthResponse, error) {
 
 	var healthResponse HealthResponse
 	err = json.NewDecoder(resp.Body).Decode(&healthResponse)
-	if healthResponse.Status == ERROR {
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			return HealthResponse{}, &ErrClient{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(healthResponse.Message),
-			}
-		} else if resp.StatusCode >= 500 {
-			return HealthResponse{}, &ErrServer{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(healthResponse.Message),
-			}
-		}
-
-		return HealthResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, healthResponse.Message)
-
-	} else if err != nil {
-		return HealthResponse{}, &ErrJSONDecoding{Err: err}
+	if err != nil {
+		return HealthResponse{}, err
 	}
 
 	return healthResponse, nil

@@ -56,7 +56,7 @@ type OrderBookPayload struct {
 }
 
 type OrderBookResponse struct {
-	Status  Status           `json:"status"`
+	Status  string           `json:"status"`
 	Message string           `json:"message"`
 	Payload OrderBookPayload `json:"payload"`
 }
@@ -97,23 +97,8 @@ func (c *Client) OrderBook(ctx context.Context, market string, options OrderBook
 
 	var orderBookResponse OrderBookResponse
 	err = json.NewDecoder(resp.Body).Decode(&orderBookResponse)
-	if orderBookResponse.Status == ERROR {
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			return OrderBookResponse{}, &ErrClient{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(orderBookResponse.Message),
-			}
-		} else if resp.StatusCode >= 500 {
-			return OrderBookResponse{}, &ErrServer{
-				Status: resp.StatusCode,
-				Err:    fmt.Errorf(orderBookResponse.Message),
-			}
-		}
-
-		return OrderBookResponse{}, fmt.Errorf("status: %d\nerror: %s", resp.StatusCode, orderBookResponse.Message)
-
-	} else if err != nil {
-		return OrderBookResponse{}, &ErrJSONDecoding{Err: err}
+	if err != nil {
+		return OrderBookResponse{}, err
 	}
 
 	return orderBookResponse, nil
